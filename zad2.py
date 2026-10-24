@@ -4,6 +4,11 @@ import pandas as pd
 import itertools
 import math
 
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import MinMaxScaler
+
+
+#funkcje oraz generowanie wykresów takie samo jak w ostatnim zadaniu
 def korelacja_pearsona(x, y):
     n = len(x) #liczba punktów pomiarowych
     sr_x = sum(x) / n
@@ -30,13 +35,19 @@ axes1 = axes1.flatten() #przekształca macierz wykresów w jednowymiarową liste
 plt.subplots_adjust(hspace=0.45, wspace=0.3)
 pary = list(itertools.combinations(kolumny, 2))
 
+kmeans_3 = KMeans(n_clusters=3, random_state=42, n_init=10)
+x = dane.values
+scaler = MinMaxScaler()
+x_scaled = scaler.fit_transform(x)
+labels_3 = kmeans_3.fit_predict(x_scaled)
+
 for idx, (cecha_x, cecha_y) in enumerate(pary):
     ax = axes1[idx]
     x = dane[cecha_x]
     y = dane[cecha_y]
     r = korelacja_pearsona(x, y)
     a, b = regresja_liniowa(x, y)
-    ax.scatter(x, y, color='blue', edgecolors='black', alpha=0.6, label='Pomiary') #rysowanie punktów danych, o przezroczystosci 0.6
+    ax.scatter(x, y, c = labels_3, edgecolors='black', alpha=0.6, label='Pomiary') #rysowanie punktów danych, o przezroczystosci 0.6
     x_min, x_max = min(x), max(x) #skrajne wartości osi x
     ax.plot([x_min, x_max], [a * x_min + b, a * x_max + b], color='red', linewidth=2, label='Regresja') #rysuje prosta regresji
     #poczatek to xmin, koniec to x max, y jest obliczany za pomocą współczynników  z funkcji wyżej
@@ -49,6 +60,8 @@ for idx, (cecha_x, cecha_y) in enumerate(pary):
 
 plt.savefig("wykresy.png", dpi=300, bbox_inches='tight')
 plt.show()
+
+
 
 
 

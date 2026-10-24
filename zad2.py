@@ -1,11 +1,54 @@
 import sklearn as sk
+import matplotlib.pyplot as plt
 import pandas as pd
+import itertools
+import math
 
-kolumny = ["długośc działki kielicha", "szerokość działki kielicha", "długość płatka", "szerokość płatka"]
-dane = pd.read_csv("data2.csv", names = kolumny)
+def korelacja_pearsona(x, y):
+    n = len(x) #liczba punktów pomiarowych
+    sr_x = sum(x) / n
+    sr_y = sum(y) / n #srednie arytemtyczne dla obu wartosci
+    licznik = sum((xi - sr_x) * (yi - sr_y) for xi, yi in zip(x, y)) #suma iloczynow odchylen punktow od sredniej
+    mianownik = math.sqrt(sum((xi - sr_x)**2 for xi in x) * sum((yi - sr_y)**2 for yi in y)) #iloczyn sum kwadratów odchyleń pod pierwiastkiem
+    return licznik / mianownik if mianownik != 0 else 0.0
 
-print(dane)
+def regresja_liniowa(x, y): #obliczanie wwspolczynnikow
+    n = len(x)
+    sr_x = sum(x) / n
+    sr_y = sum(y) / n
+    licznik = sum((xi - sr_x) * (yi - sr_y) for xi, yi in zip(x, y)) # to amo co w korelacji
+    mianownik = sum((xi - sr_x)**2 for xi in x) #oblicza sumę kwadratów odchyleń zmiennej x od jej średniej
+    a = licznik / mianownik #wspolczynnik a
+    b = sr_y - a * sr_x #wspolczynnik b
+    return a, b
 
+kolumny = ["długośc działki kielicha", "szerokość działki kielicha", "długość płatka", "szerokość płatka"] #6kombiacji
+dane = pd.read_csv("data2.csv", sep =",", names = kolumny)
+
+fig1, axes1 = plt.subplots(nrows=3, ncols=2, figsize=(12, 15)) #ustawienie pól dla wszystkich wykresów
+axes1 = axes1.flatten() #przekształca macierz wykresów w jednowymiarową liste
+plt.subplots_adjust(hspace=0.45, wspace=0.3)
+pary = list(itertools.combinations(kolumny, 2))
+
+for idx, (cecha_x, cecha_y) in enumerate(pary):
+    ax = axes1[idx]
+    x = dane[cecha_x]
+    y = dane[cecha_y]
+    r = korelacja_pearsona(x, y)
+    a, b = regresja_liniowa(x, y)
+    ax.scatter(x, y, color='blue', edgecolors='black', alpha=0.6, label='Pomiary') #rysowanie punktów danych, o przezroczystosci 0.6
+    x_min, x_max = min(x), max(x) #skrajne wartości osi x
+    ax.plot([x_min, x_max], [a * x_min + b, a * x_max + b], color='red', linewidth=2, label='Regresja') #rysuje prosta regresji
+    #poczatek to xmin, koniec to x max, y jest obliczany za pomocą współczynników  z funkcji wyżej
+    znak = "+" if b >= 0 else "-"  #ustawianie znaku dla regresji liniowej
+    ax.set_title(f"r = {r:.2f}, y = {a:.1f}x {znak} {abs(b):.1f}", fontsize=11, fontweight='bold')
+    ax.set_xlabel(f"{cecha_x} (cm)", fontsize=9)
+    ax.set_ylabel(f"{cecha_y} (cm)", fontsize=9)
+    ax.grid(True, linestyle='--', alpha=0.6) #siatka półprzezroczysta dla łatwiejszego odczytania danych
+    ax.legend(loc='upper left', fontsize=8) #legenda w lewym górnym rogu
+
+plt.savefig("wykresy.png", dpi=300, bbox_inches='tight')
+plt.show()
 
 
 

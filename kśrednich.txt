@@ -1,0 +1,36 @@
+ALGORYTM KŚREDNICH:
+
+1. wybieramy losowe punkty na wykresie - centroidy. One będą
+"środkiem" naszych grup. 
+
+2. Dla każdego punktu obliczamy jego odległość do każdego centroidu.
+Punkt należy do tej grupy, do którego centroidu jest mu najbliżej.
+
+3. Centroidy były wybierane losowo, dlatego najprawdopodobniej
+grupowanie nie jest najlepsze. Dlatego liczymy
+środek ciężkości punktów na wykresie (jest to punkt którego wartość
+x jest równa średniej wartości x wszystkich punktów i to samo dla y). 
+
+4. Centroid przesuwany jest w miejsce środka cięzkości.
+
+kroki od 2 do 4 powtarzane są do osiągniecia warunku stopu.
+
+warunki stopu:
+- centroid nie jest przesuwany
+- przydział punktów sie nie zmienia między klastrami
+- osiągnieto maksymalną liczbe iteracji daną z góry
+
+
+Wartość WCSS:
+Dla każdego klastra bierzesz jego centroid (środek ciężkości).
+
+Obliczasz odległość każdego punktu w tym klastrze od jego centroidu.
+
+Podnosisz te odległości do kwadratu (żeby uniknąć wartości ujemnych i mocniej karać punkty leżące daleko).
+
+Sumujesz te kwadraty dla wszystkich punktów we wszystkich klastrach.
+
+
+
+
+

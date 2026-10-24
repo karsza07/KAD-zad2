@@ -1,4 +1,3 @@
-import sklearn as sk
 import matplotlib.pyplot as plt
 import pandas as pd
 import itertools
@@ -33,10 +32,10 @@ dane = pd.read_csv("data2.csv", sep =",", names = kolumny)
 fig1, axes1 = plt.subplots(nrows=3, ncols=2, figsize=(12, 15)) #ustawienie pól dla wszystkich wykresów
 axes1 = axes1.flatten() #przekształca macierz wykresów w jednowymiarową liste
 plt.subplots_adjust(hspace=0.45, wspace=0.3)
-pary = list(itertools.combinations(kolumny, 2))
+pary = list(itertools.combinations(kolumny, 2)) #wypisanie wszystkich możliwych par
 
-kmeans_3 = KMeans(n_clusters=3, random_state=42, n_init=10)
-x = dane.values
+kmeans_3 = KMeans(n_clusters=3) #tworzenie algorytmu, dla 3 grup
+x = dane.values #tworzenie macierzy (zmiana tyoy z dataframe na czyste dane)
 scaler = MinMaxScaler()
 x_scaled = scaler.fit_transform(x)
 labels_3 = kmeans_3.fit_predict(x_scaled)
@@ -48,18 +47,17 @@ for idx, (cecha_x, cecha_y) in enumerate(pary):
     r = korelacja_pearsona(x, y)
     a, b = regresja_liniowa(x, y)
     ax.scatter(x, y, c = labels_3, edgecolors='black', alpha=0.6, label='Pomiary') #rysowanie punktów danych, o przezroczystosci 0.6
-    x_min, x_max = min(x), max(x) #skrajne wartości osi x
-    ax.plot([x_min, x_max], [a * x_min + b, a * x_max + b], color='red', linewidth=2, label='Regresja') #rysuje prosta regresji
-    #poczatek to xmin, koniec to x max, y jest obliczany za pomocą współczynników  z funkcji wyżej
-    znak = "+" if b >= 0 else "-"  #ustawianie znaku dla regresji liniowej
-    ax.set_title(f"r = {r:.2f}, y = {a:.1f}x {znak} {abs(b):.1f}", fontsize=11, fontweight='bold')
+    ax.set_title(f"{cecha_x} vs {cecha_y}", fontsize=11, fontweight='bold')
     ax.set_xlabel(f"{cecha_x} (cm)", fontsize=9)
     ax.set_ylabel(f"{cecha_y} (cm)", fontsize=9)
     ax.grid(True, linestyle='--', alpha=0.6) #siatka półprzezroczysta dla łatwiejszego odczytania danych
-    ax.legend(loc='upper left', fontsize=8) #legenda w lewym górnym rogu
 
+print(" ")
+print(f" WCSS = {kmeans_3.inertia_}")
 plt.savefig("wykresy.png", dpi=300, bbox_inches='tight')
 plt.show()
+
+
 
 
 

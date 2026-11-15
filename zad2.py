@@ -1,31 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import itertools
-import math
 
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler
 
 
 #funkcje oraz generowanie wykresów takie samo jak w ostatnim zadaniu
-def korelacja_pearsona(x, y):
-    n = len(x) #liczba punktów pomiarowych
-    sr_x = sum(x) / n
-    sr_y = sum(y) / n #srednie arytemtyczne dla obu wartosci
-    licznik = sum((xi - sr_x) * (yi - sr_y) for xi, yi in zip(x, y)) #suma iloczynow odchylen punktow od sredniej
-    mianownik = math.sqrt(sum((xi - sr_x)**2 for xi in x) * sum((yi - sr_y)**2 for yi in y)) #iloczyn sum kwadratów odchyleń pod pierwiastkiem
-    return licznik / mianownik if mianownik != 0 else 0.0
-
-def regresja_liniowa(x, y): #obliczanie wwspolczynnikow
-    n = len(x)
-    sr_x = sum(x) / n
-    sr_y = sum(y) / n
-    licznik = sum((xi - sr_x) * (yi - sr_y) for xi, yi in zip(x, y)) # to amo co w korelacji
-    mianownik = sum((xi - sr_x)**2 for xi in x) #oblicza sumę kwadratów odchyleń zmiennej x od jej średniej
-    a = licznik / mianownik #wspolczynnik a
-    b = sr_y - a * sr_x #wspolczynnik b
-    return a, b
-
 kolumny = ["długośc działki kielicha", "szerokość działki kielicha", "długość płatka", "szerokość płatka"] #6kombiacji
 dane = pd.read_csv("data2.csv", sep =",", names = kolumny)
 
@@ -44,18 +25,40 @@ for idx, (cecha_x, cecha_y) in enumerate(pary):
     ax = axes1[idx]
     x = dane[cecha_x]
     y = dane[cecha_y]
-    r = korelacja_pearsona(x, y)
-    a, b = regresja_liniowa(x, y)
     ax.scatter(x, y, c = labels_3, edgecolors='black', alpha=0.6, label='Pomiary') #rysowanie punktów danych, o przezroczystosci 0.6
     ax.set_title(f"{cecha_x} vs {cecha_y}", fontsize=11, fontweight='bold')
     ax.set_xlabel(f"{cecha_x} (cm)", fontsize=9)
     ax.set_ylabel(f"{cecha_y} (cm)", fontsize=9)
     ax.grid(True, linestyle='--', alpha=0.6) #siatka półprzezroczysta dla łatwiejszego odczytania danych
 
-print(" ")
-print(f" WCSS = {kmeans_3.inertia_}")
 plt.savefig("wykresy.png", dpi=300, bbox_inches='tight')
 plt.show()
+
+k_wartosci = list(range(2, 11))
+wcss_tablica = []
+
+print("\nWyniki grupowania dla k od 2 do 10:")
+for k in k_wartosci:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(x_scaled)
+
+    wcss = round(kmeans.inertia_, 4)
+    iteracje = kmeans.n_iter_
+    print(f"k = {k:2d} | WCSS: {wcss:8.4f} | Liczba iteracji: {iteracje}")
+    wcss_tablica.append(wcss)
+
+plt.figure(figsize=(8, 5))
+plt.plot(k_wartosci, wcss_tablica, marker='o', linestyle='-', color='b')
+plt.title("Wartość WCSS w zależności od liczby klastrów k", fontsize=12, fontweight='bold')
+plt.xlabel("Liczba klastrów (k)", fontsize=10)
+plt.ylabel("WCSS", fontsize=10)
+plt.xticks(k_wartosci)
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.savefig("wykres_wcss.png", dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
 
 
 

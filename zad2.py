@@ -18,7 +18,7 @@ pary = list(itertools.combinations(kolumny, 2)) #wypisanie wszystkich możliwych
 kmeans_3 = KMeans(n_clusters=3, random_state=42) #tworzenie algorytmu, dla 3 grup
 
 x = dane.values #tworzenie macierzy (zmiana tyoy z dataframe na czyste dane)
-scaler = MinMaxScaler()
+scaler = MinMaxScaler() #obiek który ma normalizować
 x_scaled = scaler.fit_transform(x)
 labels_3 = kmeans_3.fit_predict(x_scaled)
 

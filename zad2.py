@@ -15,7 +15,8 @@ axes1 = axes1.flatten() #przekształca macierz wykresów w jednowymiarową liste
 plt.subplots_adjust(hspace=0.45, wspace=0.3)
 pary = list(itertools.combinations(kolumny, 2)) #wypisanie wszystkich możliwych par
 
-kmeans_3 = KMeans(n_clusters=3) #tworzenie algorytmu, dla 3 grup
+kmeans_3 = KMeans(n_clusters=3, random_state=42) #tworzenie algorytmu, dla 3 grup
+
 x = dane.values #tworzenie macierzy (zmiana tyoy z dataframe na czyste dane)
 scaler = MinMaxScaler()
 x_scaled = scaler.fit_transform(x)
